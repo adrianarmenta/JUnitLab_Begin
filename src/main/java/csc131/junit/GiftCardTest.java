@@ -31,7 +31,7 @@ public class GiftCardTest {
 		balance = 100.00;
 		card = new GiftCard(issuingStore, balance);
 		assertEquals("getBalance()",
-		issuingStore, card.getIssuingStore(), tolerance);
+		balance, card.getBalance(), tolerance);
 	}
 	@Test
 	public void deduct_RemainingBalance(){
@@ -45,30 +45,47 @@ public class GiftCardTest {
 		balance = 100;
 		issuingStore = 1337;
 		card = new GiftCard(issuingStore, balance);
-        
-        if (amount < 0.0)
+        for(amount = -50; amount < 100; amount++)
         {
-            result = "Invalid Transaction";
+	        if (amount < 0.0)
+	        {
+	            result = "Invalid Transaction";
+	        }
+	        else
+	        {
+	            balance -= amount;
+	            
+	            if (balance < 0.0)
+	            {
+	                result = "Amount Due: " + String.format("%6.2f",
+	                                                        Math.abs(balance));
+	                balance = 0.0;
+	            }
+	            else
+	            {
+	                result = "Remaining Balance: " + String.format("%6.2f",
+	                                                         Math.abs(balance));
+	            }
+	        }
+			
+			assertEquals("deduct_RemainingBalance()", result, card.deduct(amount));
         }
-        else
-        {
-            balance -= amount;
-            
-            if (balance < 0.0)
-            {
-                result = "Amount Due: " + String.format("%6.2f",
-                                                        Math.abs(balance));
-                balance = 0.0;
-            }
-            else
-            {
-                result = "Remaining Balance: " + String.format("%6.2f",
-                                                         Math.abs(balance));
-            }
-        }
-		
-		assertEquals("deduct_RemainingBalance()", result, card.deduct(amount));
 	}
+	@Test
+	public void annotatedMethod(){
+		assertThrows(IllegalArgumentException.class, () -> {new GiftCard(1,-100.00);});	
 		
+	}
+	@Test
+	public void constructor_IncorrectID_Low() {
+		assertThrows(IllegalArgumentException.class, () -> {new GiftCard(-1,100.00);});
 		
+	
+	}
+	@Test
+	public void constructor_IncorrectID_High() {
+		assertThrows(IllegalArgumentException.class, () -> {new GiftCard(10000,100.00);});
+	
+	}
+	
 }
